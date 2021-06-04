@@ -13,10 +13,13 @@
 ```go
 func main() {
 	client, err := fsclient.WithCopyFsClient(fsclient.FsClient{
+		// fileserver host
 		Uri:        "http://localhost:1337/",
 		SecureType: fsclient.TypeToken,
+		// for token auth or JWT
 		TokenType:  requesters.TokenTypeQuery,
 		Token:      "changemeplease123",
+		// for base auth
 		User:       "qwx1337",
 		Password:   "123456",
 	})
