@@ -2,7 +2,7 @@
 
 #### Install
 
-`$ go get -u github.com/zikwall/fsclient@v0.0.1`
+`$ go get -u github.com/zikwall/fsclient@v0.0.2`
 
 #### Install server
 
