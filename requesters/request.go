@@ -3,13 +3,16 @@ package requesters
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/zikwall/fsclient/errors"
 	"github.com/zikwall/fsclient/impl"
 	"io"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"os"
+	"time"
 )
 
 func prepareRequest(context context.Context, uri string, dests ...impl.FileDest) (*http.Request, error) {
@@ -59,7 +62,20 @@ func prepareResponse(context context.Context, request *http.Request) error {
 	clone := request.Clone(context)
 	clone.Body, _ = request.GetBody()
 
-	response, err := (&http.Client{}).Do(clone)
+	// temporary
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   10 * time.Second,
+			KeepAlive: 1 * time.Minute,
+		}).DialContext,
+		TLSHandshakeTimeout: 10 * time.Second,
+		TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
+	}
+
+	response, err := (&http.Client{
+		Transport: transport,
+	}).Do(clone)
 
 	if err != nil {
 		return errors.Wrap("failed prepare response", err)
