@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/zikwall/fsclient/errors"
+	"github.com/zikwall/fsclient/impl"
 	"github.com/zikwall/fsclient/requesters"
 	"net/url"
-	"os"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 
 type FsClient struct {
 	uri        *url.URL
-	client     Client
+	client     impl.Client
 	Uri        string
 	SecureType int
 	TokenType  requesters.TokenType
@@ -47,7 +47,7 @@ func WithCopyFsClient(fc FsClient) (FsClient, error) {
 	return fc, nil
 }
 
-func (fs FsClient) SendFile(context context.Context, files ...*os.File) error {
+func (fs FsClient) SendFile(context context.Context, files ...impl.FileDest) error {
 	if len(files) == 0 {
 		return fmt.Errorf("failed send files with empty size")
 	}

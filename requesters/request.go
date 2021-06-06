@@ -5,24 +5,35 @@ import (
 	"context"
 	"fmt"
 	"github.com/zikwall/fsclient/errors"
+	"github.com/zikwall/fsclient/impl"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 )
 
-func prepareRequest(context context.Context, uri string, files ...*os.File) (*http.Request, error) {
+func prepareRequest(context context.Context, uri string, dests ...impl.FileDest) (*http.Request, error) {
 	var body bytes.Buffer
+	var err error
+
 	writer := multipart.NewWriter(&body)
 
-	for _, file := range files {
-		part, err := writer.CreateFormFile("files[]", file.Name())
+	for _, dest := range dests {
+		filename := dest.Name
+		switch f := dest.File.(type) {
+		case *os.File:
+			if filename == "" {
+				filename = f.Name()
+			}
+		}
+
+		part, err := writer.CreateFormFile("files[]", filename)
 
 		if err != nil {
 			return nil, errors.Wrap("failed create form file", err)
 		}
 
-		if _, err := io.Copy(part, file); err != nil {
+		if _, err := io.Copy(part, dest.File); err != nil {
 			return nil, errors.Wrap("failed copy buffer", err)
 		}
 	}

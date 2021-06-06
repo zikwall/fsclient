@@ -2,8 +2,8 @@ package requesters
 
 import (
 	"context"
+	"github.com/zikwall/fsclient/impl"
 	"net/url"
-	"os"
 )
 
 type BasicAuthRequester struct {
@@ -20,7 +20,7 @@ func NewBasicAuthRequester(uri *url.URL, user, password string) BasicAuthRequest
 	}
 }
 
-func (br BasicAuthRequester) SendFile(context context.Context, files ...*os.File) error {
+func (br BasicAuthRequester) SendFile(context context.Context, files ...impl.FileDest) error {
 	request, err := prepareRequest(context, br.uri, files...)
 
 	if err != nil {

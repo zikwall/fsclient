@@ -3,8 +3,8 @@ package requesters
 import (
 	"context"
 	"fmt"
+	"github.com/zikwall/fsclient/impl"
 	"net/url"
-	"os"
 )
 
 type TokenType int
@@ -40,7 +40,7 @@ func NewTokenRequester(uri *url.URL, token string, tokenType ...TokenType) Token
 	return tr
 }
 
-func (tr TokenRequester) SendFile(context context.Context, files ...*os.File) error {
+func (tr TokenRequester) SendFile(context context.Context, files ...impl.FileDest) error {
 	request, err := prepareRequest(context, tr.uri, files...)
 
 	if err != nil {
